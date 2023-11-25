@@ -33,15 +33,20 @@ def train(train_input_dir_path, valid_input_dir_path, classes_txt_path, model_ty
     valid_dataset = ValidDataset(valid_input_dir_path, classes, image_size, max_sample=test_max_sample_per_classes)
     valid_data = count_dataset.TestCountDataset.get_all_data(valid_dataset)
 
+    # train-valid
+    TrainValidDataset = type(f'TrainValidDataset', (count_dataset.TestCountDataset,), dict())
+    train_valid_dataset = TrainValidDataset(train_input_dir_path, classes, image_size, max_sample=test_max_sample_per_classes)
+    train_valid_data = count_dataset.TestCountDataset.get_all_data(train_valid_dataset)
+
     # prepare model
     model = model_dict[model_type](len(classes), image_size, fine=True)
-    model.compile(optimizer=tf.keras.optimizers.Adam(), loss=tf.keras.losses.MeanSquaredError())
+    model.compile(optimizer=tf.keras.optimizers.Adam(), loss=tf.keras.losses.Huber())
 
     # prepare callback
     save_model_dir_path = os.path.join(output_dir_path,
                                        f'{datetime.now(pytz.timezone("Asia/Tokyo")).strftime("%Y-%m-%d-%H-%M-%S")}')
     prefix = f'step-{step_size}_batch-{batch_size}'
-    callback = save_callback.SaveCallback(save_model_dir_path=save_model_dir_path, prefix=prefix, valid_data=valid_data)
+    callback = save_callback.SaveCallback(save_model_dir_path=save_model_dir_path, prefix=prefix, valid_data=valid_data, train_valid_data=train_valid_data)
 
     model.fit_generator(train_dataset, steps_per_epoch=step_size,
                         epochs=epochs,

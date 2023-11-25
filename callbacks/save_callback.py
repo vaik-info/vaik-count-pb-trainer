@@ -3,13 +3,14 @@ import os
 import tensorflow as tf
 
 class SaveCallback(tf.keras.callbacks.Callback):
-    def __init__(self, save_model_dir_path, prefix, valid_data, logging_sample=10):
+    def __init__(self, save_model_dir_path, prefix, valid_data, train_valid_data, logging_sample=10):
         super(SaveCallback, self).__init__()
         os.makedirs(save_model_dir_path, exist_ok=True)
 
         self.save_model_dir_path = save_model_dir_path
         self.prefix = prefix
         self.valid_data = valid_data
+        self.train_valid_data = train_valid_data
         self.logging_sample = logging_sample
 
     def on_epoch_end(self, epoch, logs=None):
@@ -19,15 +20,15 @@ class SaveCallback(tf.keras.callbacks.Callback):
         os.makedirs(output_model_dir_path, exist_ok=True)
         self.model.save(output_model_dir_path)
 
-        output_log_dir_path = output_model_dir_path + '_log'
-        self.predict_dump(output_log_dir_path)
+        self.predict_dump(output_model_dir_path + '_log_train', self.train_valid_data)
+        self.predict_dump(output_model_dir_path + '_log_valid', self.valid_data)
 
-    def predict_dump(self, output_log_dir_path):
+    def predict_dump(self, output_log_dir_path, valid_data):
         os.makedirs(output_log_dir_path, exist_ok=True)
-        result = self.model.predict(self.valid_data[0][:self.logging_sample])
-        for index, image in enumerate(self.valid_data[0][:self.logging_sample]):
+        result = self.model.predict(valid_data[0][:self.logging_sample])
+        for index, image in enumerate(valid_data[0][:self.logging_sample]):
             answer_string = ""
-            for answer in self.valid_data[1][index]:
+            for answer in valid_data[1][index]:
                 answer_string += f'{int(answer)}_'
             answer_string = answer_string[:-1]
             inf_string = ""
