@@ -60,7 +60,7 @@ if __name__ == '__main__':
     parser.add_argument('--valid_input_dir_path', type=str, default='~/.vaik-mnist-count-dataset/valid')
     parser.add_argument('--classes_txt_path', type=str, default='~/.vaik-mnist-count-dataset/classes.txt')
     parser.add_argument('--model_type', type=str, default='mobile_net_v2_cam_model')
-    parser.add_argument('--epochs', type=int, default=1000)
+    parser.add_argument('--epochs', type=int, default=20)
     parser.add_argument('--step_size', type=int, default=1000)
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--test_max_sample_per_classes', type=int, default=100)
