@@ -32,6 +32,6 @@ class SaveCallback(tf.keras.callbacks.Callback):
             answer_string = answer_string[:-1]
             inf_string = ""
             for inf in result[index]:
-                inf_string += f'{inf:.2f}_'
+                inf_string += f'{round(inf)}_'
             inf_string = inf_string[:-1]
             Image.fromarray(image).save(os.path.join(output_log_dir_path, f'{index:04d}_ans-{answer_string}_inf-{inf_string}.png'))
