@@ -19,7 +19,7 @@ model_dict = {
 }
 
 def train(train_input_dir_path, valid_input_dir_path, classes_txt_path, model_type, epochs, step_size, batch_size,
-          test_max_sample_per_classes, image_size, output_dir_path):
+          test_max_sample, image_size, output_dir_path):
     with open(classes_txt_path, 'r') as f:
         classes = f.readlines()
     classes = [label.strip() for label in classes]
@@ -30,12 +30,12 @@ def train(train_input_dir_path, valid_input_dir_path, classes_txt_path, model_ty
         tf.constant(0, dtype=tf.uint8), tf.constant(0, dtype=tf.float32)))
     # valid
     ValidDataset = type(f'ValidDataset', (count_dataset.TestCountDataset,), dict())
-    valid_dataset = ValidDataset(valid_input_dir_path, classes, image_size, max_sample=test_max_sample_per_classes)
+    valid_dataset = ValidDataset(valid_input_dir_path, classes, image_size, max_sample=test_max_sample)
     valid_data = count_dataset.TestCountDataset.get_all_data(valid_dataset)
 
     # train-valid
     TrainValidDataset = type(f'TrainValidDataset', (count_dataset.TestCountDataset,), dict())
-    train_valid_dataset = TrainValidDataset(train_input_dir_path, classes, image_size, max_sample=test_max_sample_per_classes)
+    train_valid_dataset = TrainValidDataset(train_input_dir_path, classes, image_size, max_sample=test_max_sample)
     train_valid_data = count_dataset.TestCountDataset.get_all_data(train_valid_dataset)
 
     # prepare model
@@ -63,7 +63,7 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', type=int, default=20)
     parser.add_argument('--step_size', type=int, default=1000)
     parser.add_argument('--batch_size', type=int, default=16)
-    parser.add_argument('--test_max_sample_per_classes', type=int, default=100)
+    parser.add_argument('--test_max_sample', type=int, default=100)
     parser.add_argument('--image_size', type=int, default=320)
     parser.add_argument('--output_dir_path', type=str, default='~/.vaik-count-pb-trainer/output_model')
     args = parser.parse_args()
@@ -75,5 +75,5 @@ if __name__ == '__main__':
 
     os.makedirs(args.output_dir_path, exist_ok=True)
     train(args.train_input_dir_path, args.valid_input_dir_path, args.classes_txt_path, args.model_type,
-          args.epochs, args.step_size, args.batch_size, args.test_max_sample_per_classes,
+          args.epochs, args.step_size, args.batch_size, args.test_max_sample,
           args.image_size, args.output_dir_path)
