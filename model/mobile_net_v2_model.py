@@ -6,6 +6,6 @@ def prepare(class_num, image_size=(224, 224), bottle_neck=64, fine=False):
     x = base_model.output
     x = tf.keras.layers.Conv2D(filters=bottle_neck, kernel_size=3, activation='relu')(x)
     x = tf.keras.layers.GlobalAveragePooling2D()(x)
-    predictions = tf.keras.layers.Dense(class_num)(x)
+    predictions = tf.keras.layers.Dense(class_num, activation='relu')(x)
     model = tf.keras.Model(inputs=base_model.input, outputs=predictions)
     return model
