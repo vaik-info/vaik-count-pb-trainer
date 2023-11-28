@@ -39,14 +39,14 @@ def train(train_input_dir_path, valid_input_dir_path, classes_txt_path, model_ty
     train_valid_data = count_dataset.TestCountDataset.get_all_data(train_valid_dataset)
 
     # prepare model
-    train_model, save_model = model_dict[model_type](len(classes), image_size, fine=True)
+    train_model, feature_extract_model, save_model = model_dict[model_type](len(classes), image_size, fine=True)
     train_model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), loss=tf.keras.losses.Huber())
 
     # prepare callback
     save_model_dir_path = os.path.join(output_dir_path,
                                        f'{datetime.now(pytz.timezone("Asia/Tokyo")).strftime("%Y-%m-%d-%H-%M-%S")}')
     prefix = f'step-{step_size}_batch-{batch_size}'
-    callback = save_callback.SaveCallback(save_model=save_model, save_model_dir_path=save_model_dir_path, prefix=prefix, valid_data=valid_data, train_valid_data=train_valid_data)
+    callback = save_callback.SaveCallback(save_model=save_model, feature_extract_model=feature_extract_model, save_model_dir_path=save_model_dir_path, prefix=prefix, valid_data=valid_data, train_valid_data=train_valid_data)
 
     train_model.fit_generator(train_dataset, steps_per_epoch=step_size,
                         epochs=epochs,
@@ -60,11 +60,11 @@ if __name__ == '__main__':
     parser.add_argument('--valid_input_dir_path', type=str, default='~/.vaik-mnist-count-dataset/valid')
     parser.add_argument('--classes_txt_path', type=str, default='~/.vaik-mnist-count-dataset/classes.txt')
     parser.add_argument('--model_type', type=str, default='mobile_net_v2_cam_model')
-    parser.add_argument('--epochs', type=int, default=20)
+    parser.add_argument('--epochs', type=int, default=10)
     parser.add_argument('--step_size', type=int, default=1000)
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--test_max_sample', type=int, default=100)
-    parser.add_argument('--image_size', type=int, default=320)
+    parser.add_argument('--image_size', type=int, default=224)
     parser.add_argument('--output_dir_path', type=str, default='~/.vaik-count-pb-trainer/output_model')
     args = parser.parse_args()
 

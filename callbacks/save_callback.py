@@ -3,7 +3,7 @@ import os
 import tensorflow as tf
 
 class SaveCallback(tf.keras.callbacks.Callback):
-    def __init__(self, save_model, save_model_dir_path, prefix, valid_data, train_valid_data, logging_sample=10):
+    def __init__(self, save_model, feature_extract_model, save_model_dir_path, prefix, valid_data, train_valid_data, logging_sample=10):
         super(SaveCallback, self).__init__()
         os.makedirs(save_model_dir_path, exist_ok=True)
 
@@ -13,6 +13,7 @@ class SaveCallback(tf.keras.callbacks.Callback):
         self.train_valid_data = train_valid_data
         self.logging_sample = logging_sample
         self.save_model = save_model
+        self.feature_extract_model = feature_extract_model
 
     def on_epoch_end(self, epoch, logs=None):
         loss_string = "_".join([f'{k}_{v:.4f}' for k, v in logs.items()])
@@ -20,6 +21,10 @@ class SaveCallback(tf.keras.callbacks.Callback):
         output_model_dir_path = os.path.join(self.save_model_dir_path, save_model_name)
         os.makedirs(output_model_dir_path, exist_ok=True)
         self.save_model.save(output_model_dir_path)
+
+        output_model_dir_path += "_feature"
+        os.makedirs(output_model_dir_path, exist_ok=True)
+        self.feature_extract_model.save(output_model_dir_path)
 
         self.predict_dump(output_model_dir_path + '_log_train', self.train_valid_data)
         self.predict_dump(output_model_dir_path + '_log_valid', self.valid_data)
