@@ -22,9 +22,9 @@ class SaveCallback(tf.keras.callbacks.Callback):
         os.makedirs(output_model_dir_path, exist_ok=True)
         self.save_model.save(output_model_dir_path)
 
-        output_model_dir_path += "_feature"
+        output_model_dir_path += "_feature_ckpt"
         os.makedirs(output_model_dir_path, exist_ok=True)
-        self.feature_extract_model.save(output_model_dir_path)
+        self.feature_extract_model.save_weights(os.path.join(output_model_dir_path, 'weight.ckpt'))
 
         self.predict_dump(output_model_dir_path + '_log_train', self.train_valid_data)
         self.predict_dump(output_model_dir_path + '_log_valid', self.valid_data)
