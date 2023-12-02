@@ -17,17 +17,18 @@ class SaveCallback(tf.keras.callbacks.Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         loss_string = "_".join([f'{k}_{v:.4f}' for k, v in logs.items()])
-        save_model_name = f'{self.prefix}_epoch-{epoch}_{loss_string}'
-        output_model_dir_path = os.path.join(self.save_model_dir_path, save_model_name)
-        os.makedirs(output_model_dir_path, exist_ok=True)
-        self.save_model.save(output_model_dir_path)
+        save_org_model_name = f'{self.prefix}_epoch-{epoch}_{loss_string}_org.h5'
+        output_org_model_file_path = os.path.join(self.save_model_dir_path, save_org_model_name)
+        os.makedirs(os.path.dirname(output_org_model_file_path), exist_ok=True)
+        self.save_model.save(output_org_model_file_path)
 
-        output_model_dir_path += "_feature_ckpt"
-        os.makedirs(output_model_dir_path, exist_ok=True)
-        self.feature_extract_model.save_weights(os.path.join(output_model_dir_path, 'weight.ckpt'))
+        feature_model_name =  f'{self.prefix}_epoch-{epoch}_{loss_string}_feature.h5'
+        output_feature_model_file_path = os.path.join(self.save_model_dir_path, feature_model_name)
+        os.makedirs(os.path.dirname(output_feature_model_file_path), exist_ok=True)
+        self.save_model.save(output_feature_model_file_path)
 
-        self.predict_dump(output_model_dir_path + '_log_train', self.train_valid_data)
-        self.predict_dump(output_model_dir_path + '_log_valid', self.valid_data)
+        self.predict_dump(output_feature_model_file_path + '_log_train', self.train_valid_data)
+        self.predict_dump(output_feature_model_file_path + '_log_valid', self.valid_data)
 
     def predict_dump(self, output_log_dir_path, valid_data):
         os.makedirs(output_log_dir_path, exist_ok=True)
